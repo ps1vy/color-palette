@@ -339,10 +339,16 @@ button:active {
   border-bottom: none;
 }
 
-/* Keep saved palette style/harmony text black even in dark mode */
+/* Keep saved palette style/harmony text black and make them display inline */
+.saved-palette-item .flex-col {
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 12px;
+}
+
 .saved-palette-item .flex-col span {
   color: #000000 !important;
-  margin-bottom: 4px;
 }
 
 /* Dark mode / Light mode styles */
@@ -399,8 +405,6 @@ button:active {
 }
 
 .dark-mode .saved-palette-item {
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
   margin-bottom: 10px;
 }
 
