@@ -159,17 +159,6 @@ const getSplitComplementaryColors = (h: number): [number, number, number] => {
   return [h1, h2, h3];
 }
 
-const getMonochromaticShades = (h: number, s: number, l: number): [number, number, number, number, number] => {
-  // Keep hue the same, vary saturation and lightness
-  return [
-    h,
-    h,
-    h,
-    h,
-    h
-  ];
-}
-
 // Generate palette with specific harmony
 const generateHarmonyPalette = (harmony: ColorHarmony, count: number = 5): string[] => {
   // Start with a random base color
@@ -183,9 +172,9 @@ const generateHarmonyPalette = (harmony: ColorHarmony, count: number = 5): strin
     case 'monochromatic':
       // Same hue, different saturation/lightness
       hues = Array(count).fill(h);
-      return hues.map((hue, i) => {
-        const newSat = Math.max(30, Math.min(90, s + (i - 2) * 15));
-        const newLight = Math.max(25, Math.min(75, l + (i - 2) * 10));
+      return hues.map((hue, index) => {
+        const newSat = Math.max(30, Math.min(90, s + (index - 2) * 15));
+        const newLight = Math.max(25, Math.min(75, l + (index - 2) * 10));
         return hslToHex(hue, newSat, newLight);
       });
       
@@ -193,9 +182,9 @@ const generateHarmonyPalette = (harmony: ColorHarmony, count: number = 5): strin
       // Base color + complement, with variations
       const complement = getComplementaryColor(h);
       hues = [h, h, complement, complement, h];
-      return hues.map((hue, i) => {
-        const newSat = Math.max(30, Math.min(90, s + (i % 2) * 10));
-        const newLight = Math.max(25, Math.min(75, l + (i % 3 - 1) * 15));
+      return hues.map((hue, index) => {
+        const newSat = Math.max(30, Math.min(90, s + (index % 2) * 10));
+        const newLight = Math.max(25, Math.min(75, l + (index % 3 - 1) * 15));
         return hslToHex(hue, newSat, newLight);
       });
       
@@ -203,9 +192,9 @@ const generateHarmonyPalette = (harmony: ColorHarmony, count: number = 5): strin
       // Three adjacent colors on the wheel
       const [h1, h2, h3] = getAnalogousColors(h);
       hues = [h1, h1, h2, h3, h3];
-      return hues.map((hue, i) => {
+      return hues.map((hue, index) => {
         const newSat = Math.max(40, Math.min(90, s));
-        const newLight = Math.max(35, Math.min(65, l + (i % 3 - 1) * 10));
+        const newLight = Math.max(35, Math.min(65, l + (index % 3 - 1) * 10));
         return hslToHex(hue, newSat, newLight);
       });
       
@@ -213,7 +202,7 @@ const generateHarmonyPalette = (harmony: ColorHarmony, count: number = 5): strin
       // Three colors evenly spaced on the wheel
       const [t1, t2, t3] = getTriadicColors(h);
       hues = [t1, t2, t3, t1, t2];
-      return hues.map((hue, i) => {
+      return hues.map((hue, _) => {
         const newSat = Math.max(40, Math.min(90, s));
         const newLight = Math.max(35, Math.min(65, l));
         return hslToHex(hue, newSat, newLight);
@@ -223,7 +212,7 @@ const generateHarmonyPalette = (harmony: ColorHarmony, count: number = 5): strin
       // Base color + two adjacent to its complement
       const [s1, s2, s3] = getSplitComplementaryColors(h);
       hues = [s1, s1, s2, s3, s1];
-      return hues.map((hue, i) => {
+      return hues.map((hue, _) => {
         const newSat = Math.max(40, Math.min(90, s));
         const newLight = Math.max(35, Math.min(65, l));
         return hslToHex(hue, newSat, newLight);
@@ -261,7 +250,6 @@ function App() {
   const [favorites, setFavorites] = useState<ColorPalette[]>([])
   const [showFavorites, setShowFavorites] = useState(false)
   const [toast, setToast] = useState<Toast | null>(null)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [saveButtonSelected, setSaveButtonSelected] = useState(false)
   const [showHearts, setShowHearts] = useState(false)
   const [isRemovingFavorite, setIsRemovingFavorite] = useState(false)
