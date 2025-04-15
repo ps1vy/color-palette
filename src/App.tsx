@@ -15,6 +15,7 @@ type Toast = {
   message: string
   type: 'success' | 'error'
 }
+type ThemeMode = 'light' | 'dark'
 
 // Utility functions
 const generateRandomHex = (): string => {
@@ -253,6 +254,7 @@ function App() {
   const [saveButtonSelected, setSaveButtonSelected] = useState(false)
   const [showHearts, setShowHearts] = useState(false)
   const [isRemovingFavorite, setIsRemovingFavorite] = useState(false)
+  const [themeMode, setThemeMode] = useState<ThemeMode>('light')
 
   // Generate initial palette on mount
   useEffect(() => {
@@ -482,11 +484,40 @@ function App() {
       })
   }
 
+  // Apply theme based on themeMode
+  useEffect(() => {
+    const root = document.documentElement;
+    
+    if (themeMode === 'dark') {
+      root.classList.add('dark-mode');
+      root.classList.remove('light-mode');
+    } else {
+      root.classList.add('light-mode');
+      root.classList.remove('dark-mode');
+    }
+  }, [themeMode]);
+
+  // Set theme based on system preference
+  useEffect(() => {
+    // Check system preference
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setThemeMode(prefersDarkMode ? 'dark' : 'light');
+    
+    // Listen for changes to system preference
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      setThemeMode(e.matches ? 'dark' : 'light');
+    };
+    
+    darkModeMediaQuery.addEventListener('change', handleChange);
+    return () => darkModeMediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
   return (
-    <div className="min-h-screen w-screen flex items-center justify-center bg-white text-black">
+    <div className={`min-h-screen w-screen flex items-center justify-center ${themeMode === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
       {/* Toast notification */}
       {toast && (
-        <div className="toast-notification animate-fade-in">
+        <div className={`toast-notification animate-fade-in ${themeMode === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
           {toast.message}
         </div>
       )}
@@ -494,12 +525,12 @@ function App() {
       {/* Favorites Toggle - Tab Style */}
       <button
         onClick={() => setShowFavorites(!showFavorites)}
-        className="favorites-tab"
+        className={`favorites-tab ${themeMode === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
       >
         {showFavorites ? "Hide favorites" : "View favorites"}
       </button>
       
-      <div className="container">
+      <div className={`container ${themeMode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
         <div style={{ paddingTop: "2rem", paddingBottom: showFavorites ? "2rem" : "4rem" }}>
           <h1 className="text-4xl md:text-5xl font-bold mb-16 text-center">
             Color palette generator
@@ -514,7 +545,7 @@ function App() {
                   style={{ backgroundColor: color }}
                   onClick={() => copyHexToClipboard(color)}
                 />
-                <div className="color-code">
+                <div className={`color-code ${themeMode === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                   {color}
                 </div>
               </div>
@@ -523,10 +554,10 @@ function App() {
           
           {/* Style & Harmony Indicators */}
           <div className="flex justify-center space-x-8 mb-12 text-center" style={{ paddingBottom: '20px' }}>
-            <p className="text-neutral-700 style-harmony-label">
+            <p className={`style-harmony-label ${themeMode === 'dark' ? 'text-gray-300' : 'text-neutral-700'}`}>
               Style: {currentStyle}
             </p>
-            <p className="text-neutral-700 style-harmony-label harmony-info" 
+            <p className={`style-harmony-label harmony-info ${themeMode === 'dark' ? 'text-gray-300' : 'text-neutral-700'}`}
                data-tooltip={getHarmonyDescription(currentHarmony)}>
               Harmony: {currentHarmony}
             </p>
@@ -537,7 +568,7 @@ function App() {
             {/* Shuffle Button */}
             <button 
               onClick={generateNewPalette}
-              className="control-btn"
+              className={`control-btn ${themeMode === 'dark' ? 'bg-gray-700 text-white' : ''}`}
               aria-label="Shuffle Colors"
             >
               🔀
@@ -546,7 +577,7 @@ function App() {
             {/* Cycle Style Button */}
             <button 
               onClick={cycleStyle}
-              className="control-btn"
+              className={`control-btn ${themeMode === 'dark' ? 'bg-gray-700 text-white' : ''}`}
               aria-label="Change Style"
             >
               🌈
@@ -555,7 +586,7 @@ function App() {
             {/* Cycle Harmony Button */}
             <button 
               onClick={cycleHarmony}
-              className="control-btn"
+              className={`control-btn ${themeMode === 'dark' ? 'bg-gray-700 text-white' : ''}`}
               aria-label="Change Harmony"
             >
               🎨
@@ -564,7 +595,7 @@ function App() {
             {/* Save Button */}
             <button 
               onClick={savePalette}
-              className={`control-btn ${saveButtonSelected ? 'selected' : ''} ${isCurrentPaletteInFavorites() ? 'in-favorites' : ''}`}
+              className={`control-btn ${saveButtonSelected ? 'selected' : ''} ${isCurrentPaletteInFavorites() ? 'in-favorites' : ''} ${themeMode === 'dark' ? 'bg-gray-700 text-white' : ''}`}
               aria-label={isCurrentPaletteInFavorites() ? "Remove from Favorites" : "Save to Favorites"}
               style={{ position: 'relative' }}
             >
@@ -586,14 +617,14 @@ function App() {
         {/* Favorites Panel */}
         {showFavorites && (
           <div className="w-full mt-4" style={{ maxWidth: '800px' }}>
-            <hr style={{ width: '100%', margin: '0 auto 1rem auto', border: 'none', borderTop: '1px solid rgba(0,0,0,0.1)' }} />
+            <hr style={{ width: '100%', margin: '0 auto 1rem auto', border: 'none', borderTop: `1px solid ${themeMode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}` }} />
             <h2 className="text-xl font-semibold mb-4 text-center">Saved Palettes</h2>
             {favorites.length === 0 ? (
-              <p className="text-center text-neutral-500">No saved palettes yet</p>
+              <p className={`text-center ${themeMode === 'dark' ? 'text-gray-400' : 'text-neutral-500'}`}>No saved palettes yet</p>
             ) : (
               <div className="space-y-4" style={{ maxHeight: '30vh', overflowY: 'auto' }}>
                 {favorites.map((palette) => (
-                  <div key={palette.id} className="saved-palette-item">
+                  <div key={palette.id} className={`saved-palette-item ${themeMode === 'dark' ? 'bg-gray-700' : ''}`}>
                     <div className="flex items-center justify-between mb-2" style={{ padding: '8px 0' }}>
                       <div className="palette-colors-container" style={{ margin: '0 10px' }}>
                         {palette.colors.map((color, colorIndex) => (
@@ -608,14 +639,14 @@ function App() {
                         ))}
                       </div>
                       <div className="flex flex-col items-start mx-4">
-                        <span className="text-sm text-neutral-500">Style: {palette.style}</span>
-                        <span className="text-sm text-neutral-500">Harmony: {palette.harmony || 'random'}</span>
+                        <span className={`text-sm ${themeMode === 'dark' ? 'text-gray-300' : 'text-neutral-500'}`}>Style: {palette.style}</span>
+                        <span className={`text-sm ${themeMode === 'dark' ? 'text-gray-300' : 'text-neutral-500'}`}>Harmony: {palette.harmony || 'random'}</span>
                       </div>
                       <button
                         onClick={() => {
                           setFavorites(favorites.filter(fav => fav.id !== palette.id))
                         }}
-                        className="text-xs text-red-500 border border-red-300 rounded"
+                        className={`text-xs border rounded ${themeMode === 'dark' ? 'text-red-400 border-red-400' : 'text-red-500 border-red-300'}`}
                         style={{ 
                           height: '24px', 
                           fontSize: '0.7rem',
