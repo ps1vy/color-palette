@@ -339,16 +339,22 @@ button:active {
   border-bottom: none;
 }
 
-/* Keep saved palette style/harmony text black and make them display inline */
+/* Saved palette layout and spacing */
+.saved-palette-item .flex {
+  display: flex;
+  align-items: center;
+}
+
+/* Keep style/harmony text black and maintain consistent spacing */
 .saved-palette-item .flex-col {
   display: flex;
-  flex-direction: row !important;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column !important;
+  margin-left: 20px; /* Consistent spacing from palette circles */
 }
 
 .saved-palette-item .flex-col span {
   color: #000000 !important;
+  margin-bottom: 4px; /* Space between style and harmony text */
 }
 
 /* Dark mode / Light mode styles */
