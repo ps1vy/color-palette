@@ -343,18 +343,24 @@ button:active {
 .saved-palette-item .flex {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 /* Keep style/harmony text black and maintain consistent spacing */
 .saved-palette-item .flex-col {
   display: flex;
   flex-direction: column !important;
-  margin-left: 20px; /* Consistent spacing from palette circles */
+  margin-left: 20px;
+  text-align: left;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .saved-palette-item .flex-col span {
   color: #000000 !important;
-  margin-bottom: 4px; /* Space between style and harmony text */
+  margin-bottom: 4px;
+  text-align: left;
 }
 
 /* Dark mode / Light mode styles */
