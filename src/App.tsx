@@ -545,7 +545,7 @@ function App() {
                   style={{ backgroundColor: color }}
                   onClick={() => copyHexToClipboard(color)}
                 />
-                <div className={`color-code ${themeMode === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                <div className="color-code">
                   {color}
                 </div>
               </div>
@@ -639,8 +639,8 @@ function App() {
                         ))}
                       </div>
                       <div className="flex flex-col items-start mx-4">
-                        <span className={`text-sm ${themeMode === 'dark' ? 'text-gray-300' : 'text-neutral-500'}`}>Style: {palette.style}</span>
-                        <span className={`text-sm ${themeMode === 'dark' ? 'text-gray-300' : 'text-neutral-500'}`}>Harmony: {palette.harmony || 'random'}</span>
+                        <span className="text-sm">Style: {palette.style}</span>
+                        <span className="text-sm">Harmony: {palette.harmony || 'random'}</span>
                       </div>
                       <button
                         onClick={() => {
