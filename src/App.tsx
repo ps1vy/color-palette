@@ -525,7 +525,7 @@ function App() {
       {/* Favorites Toggle - Tab Style */}
       <button
         onClick={() => setShowFavorites(!showFavorites)}
-        className={`favorites-tab ${themeMode === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
+        className={`favorites-tab ${themeMode === 'dark' ? 'dark-mode-button' : ''}`}
       >
         {showFavorites ? "Hide favorites" : "View favorites"}
       </button>
@@ -568,7 +568,7 @@ function App() {
             {/* Shuffle Button */}
             <button 
               onClick={generateNewPalette}
-              className={`control-btn ${themeMode === 'dark' ? 'bg-gray-700 text-white' : ''}`}
+              className={`control-btn ${themeMode === 'dark' ? 'dark-mode-button' : ''}`}
               aria-label="Shuffle Colors"
             >
               🔀
@@ -577,7 +577,7 @@ function App() {
             {/* Cycle Style Button */}
             <button 
               onClick={cycleStyle}
-              className={`control-btn ${themeMode === 'dark' ? 'bg-gray-700 text-white' : ''}`}
+              className={`control-btn ${themeMode === 'dark' ? 'dark-mode-button' : ''}`}
               aria-label="Change Style"
             >
               🌈
@@ -586,7 +586,7 @@ function App() {
             {/* Cycle Harmony Button */}
             <button 
               onClick={cycleHarmony}
-              className={`control-btn ${themeMode === 'dark' ? 'bg-gray-700 text-white' : ''}`}
+              className={`control-btn ${themeMode === 'dark' ? 'dark-mode-button' : ''}`}
               aria-label="Change Harmony"
             >
               🎨
@@ -595,7 +595,7 @@ function App() {
             {/* Save Button */}
             <button 
               onClick={savePalette}
-              className={`control-btn ${saveButtonSelected ? 'selected' : ''} ${isCurrentPaletteInFavorites() ? 'in-favorites' : ''} ${themeMode === 'dark' ? 'bg-gray-700 text-white' : ''}`}
+              className={`control-btn ${saveButtonSelected ? 'selected' : ''} ${isCurrentPaletteInFavorites() ? 'in-favorites' : ''} ${themeMode === 'dark' ? 'dark-mode-button' : ''}`}
               aria-label={isCurrentPaletteInFavorites() ? "Remove from Favorites" : "Save to Favorites"}
               style={{ position: 'relative' }}
             >
