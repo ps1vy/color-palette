@@ -533,7 +533,7 @@ function App() {
       <div className={`container ${themeMode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
         <div style={{ paddingTop: "2rem", paddingBottom: showFavorites ? "2rem" : "4rem" }}>
           <h1 className="text-4xl md:text-5xl font-bold mb-16 text-center">
-            Ivy's Color Palette Generator
+            Color palette generator
           </h1>
           
           {/* Color Circles with Hex Codes Below */}
