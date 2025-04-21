@@ -3,12 +3,12 @@ import { OpenAIMessage, sendMessage } from './openaiService';
 /**
  * Generate a creative name for a color palette using OpenAI
  * @param colors Array of hex color codes in the palette
- * @returns A creative name for the color palette
+ * @returns A creative, funny name with rhyming words for the color palette
  */
 export async function generatePaletteName(colors: string[]): Promise<string> {
   if (!colors || colors.length === 0) {
     console.error('No colors provided for naming');
-    return 'Color Collection';
+    return 'Funny Bunny Collection';
   }
   
   try {
@@ -17,17 +17,18 @@ export async function generatePaletteName(colors: string[]): Promise<string> {
     // Analyze the colors for descriptive terms to use in fallback
     const colorDescriptions = analyzeColors(colors);
     
-    // Create a prompt that describes the task
+    // Create a prompt that describes the task - now with focus on humor and rhymes
     const messages: OpenAIMessage[] = [
       {
         role: 'system',
-        content: 'You are a creative assistant that specializes in naming color palettes. ' +
-          'Generate a short, catchy, and evocative name that captures the mood or theme suggested by these colors. ' +
-          'Keep the name between 2-5 words. Do not include explanations, just return the name.'
+        content: 'You are a creative assistant that specializes in naming color palettes with humor and rhymes. ' +
+          'Generate a funny, memorable name where each word rhymes with at least one other word in the name. ' +
+          'For example: "Bright Light Night" or "Mellow Yellow Fellow" or "Blue Hue Stew". ' +
+          'Keep the name between 2-4 words. Respond only with the name, no explanations.'
       },
       {
         role: 'user',
-        content: `Create a name for a color palette with these hex colors: ${colors.join(', ')}. Respond only with the name.`
+        content: `Create a funny, rhyming name for a color palette with these hex colors: ${colors.join(', ')}. Make sure words rhyme with each other.`
       }
     ];
 
@@ -37,7 +38,7 @@ export async function generatePaletteName(colors: string[]): Promise<string> {
     });
 
     const responsePromise = sendMessage(messages, {
-      temperature: 0.8, // Higher temperature for more creativity
+      temperature: 0.9, // Higher temperature for more creativity and humor
       max_tokens: 50,   // Limit token usage
     });
 
@@ -55,15 +56,15 @@ export async function generatePaletteName(colors: string[]): Promise<string> {
     }
     
     // If we reach here, something went wrong with the API but didn't throw an error
-    // Use our fallback
-    return generateFallbackName(colorDescriptions);
+    // Use our fallback for funny rhyming names
+    return generateFunnyRhymingFallback(colorDescriptions);
     
   } catch (error) {
     console.error('Error generating palette name:', error);
     
-    // Generate a fallback name based on the colors
+    // Generate a fallback funny rhyming name based on the colors
     const colorDescriptions = analyzeColors(colors);
-    return generateFallbackName(colorDescriptions);
+    return generateFunnyRhymingFallback(colorDescriptions);
   }
 }
 
@@ -114,22 +115,65 @@ function analyzeColors(colors: string[]): string[] {
 }
 
 /**
- * Generate a fallback name based on color descriptions
+ * Generate a funny rhyming name based on color descriptions
  */
-function generateFallbackName(descriptions: string[]): string {
-  if (descriptions.length === 0) {
-    return 'Color Harmony';
+function generateFunnyRhymingFallback(descriptions: string[]): string {
+  // Rhyming pairs for color descriptions
+  const rhymingPairs: Record<string, string[]> = {
+    'Dark': ['Bark', 'Park', 'Lark', 'Spark'],
+    'Light': ['Bright', 'Night', 'Tight', 'Sight'],
+    'Red': ['Bed', 'Fed', 'Shed', 'Fred'],
+    'Green': ['Mean', 'Bean', 'Scene', 'Queen'],
+    'Blue': ['New', 'True', 'Stew', 'Sue'],
+    'Pastel': ['Bell', 'Shell', 'Well', 'Sell'],
+    'Earthy': ['Worthy', 'Perthy', 'Mirth-y'],
+    'Vibrant': ['Jubilant', 'Brilliant']
+  };
+  
+  // Default funny rhyming pairs if no matching description
+  const defaultRhymingPairs = [
+    ['Funny', 'Sunny', 'Honey', 'Bunny'],
+    ['Cool', 'Rule', 'Tool', 'Pool'],
+    ['Sleek', 'Peek', 'Chic', 'Week'],
+    ['Bold', 'Gold', 'Fold', 'Told'],
+    ['Neat', 'Sweet', 'Treat', 'Fleet']
+  ];
+  
+  // Select a descriptor to build the rhyme from
+  let selectedDescriptor = '';
+  let rhymingWords: string[] = [];
+  
+  if (descriptions.length > 0) {
+    // Try to use a color description that has rhymes
+    for (const desc of descriptions) {
+      if (rhymingPairs[desc]) {
+        selectedDescriptor = desc;
+        rhymingWords = rhymingPairs[desc];
+        break;
+      }
+    }
   }
   
-  // Get unique descriptors
-  const uniqueDescriptors = [...new Set(descriptions)];
+  // If no matching descriptor with rhymes, use a default pair
+  if (!selectedDescriptor) {
+    const randomPairIndex = Math.floor(Math.random() * defaultRhymingPairs.length);
+    rhymingWords = defaultRhymingPairs[randomPairIndex];
+  }
   
-  // Pick 1-2 descriptors
-  const selectedDescriptors = uniqueDescriptors.slice(0, Math.min(2, uniqueDescriptors.length));
+  // Pick 2-3 rhyming words
+  const numWords = Math.floor(Math.random() * 2) + 2; // 2 or 3 words
+  const shuffledWords = [...rhymingWords].sort(() => Math.random() - 0.5);
+  const selectedWords = shuffledWords.slice(0, numWords);
   
-  // Combine with a random noun
-  const nouns = ['Palette', 'Spectrum', 'Harmony', 'Collection', 'Scheme', 'Horizon', 'Vision', 'Tones'];
-  const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+  // If we had a descriptor but it's not in the words, add it
+  if (selectedDescriptor && !selectedWords.includes(selectedDescriptor)) {
+    if (Math.random() > 0.5) {
+      selectedWords.unshift(selectedDescriptor); // Add at beginning
+    } else {
+      selectedWords.push(selectedDescriptor); // Add at end
+    }
+  }
   
-  return `${selectedDescriptors.join(' ')} ${randomNoun}`;
+  // Combine the words
+  return selectedWords.join(' ');
 } 
