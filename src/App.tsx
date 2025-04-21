@@ -265,6 +265,13 @@ function App() {
     generateNewPalette()
   }, [])
 
+  // Automatically generate a name when the palette changes
+  useEffect(() => {
+    if (currentPalette.length > 0) {
+      generateAIName();
+    }
+  }, [currentPalette]);
+
   // Load favorites from localStorage
   useEffect(() => {
     const savedFavorites = localStorage.getItem('colorPaletteFavorites')
@@ -420,32 +427,31 @@ function App() {
     setCurrentPalette(applyStyleFilter(newColors, currentStyle))
   }
 
-  // Clear palette name when generating a new palette
-  useEffect(() => {
-    setPaletteName('');
-  }, [currentPalette]);
-
   // Generate a name for the current palette using AI
   const generateAIName = async () => {
     if (currentPalette.length === 0) return;
     
     try {
       setIsGeneratingName(true);
-      const name = await generatePaletteName(currentPalette);
-      setPaletteName(name);
+      setPaletteName(''); // Clear the previous name while generating
       
-      setToast({
-        id: Date.now().toString(),
-        message: `Named your palette: "${name}"`,
-        type: 'success'
-      });
+      const name = await generatePaletteName(currentPalette);
+      
+      // Debug log for API response
+      console.log('API response for palette name:', name);
+      
+      if (!name || name === 'Unnamed Palette') {
+        console.error('Received empty or default name from API');
+        setPaletteName('Vibrant Collection'); // Fallback default name
+        return;
+      }
+      
+      setPaletteName(name);
     } catch (error) {
       console.error('Error generating palette name:', error);
-      setToast({
-        id: Date.now().toString(),
-        message: 'Failed to generate palette name',
-        type: 'error'
-      });
+      // Use a more descriptive fallback name based on the current style and harmony
+      const fallbackName = `${currentStyle.charAt(0).toUpperCase() + currentStyle.slice(1)} ${currentHarmony.charAt(0).toUpperCase() + currentHarmony.slice(1)}`;
+      setPaletteName(fallbackName);
     } finally {
       setIsGeneratingName(false);
     }
@@ -589,21 +595,15 @@ function App() {
             ))}
           </div>
           
-          {/* AI-Generated Palette Name */}
+          {/* AI-Generated Palette Name - Now always shows the name or loading state */}
           {currentPalette.length > 0 && (
             <div className="palette-name-container mb-8 text-center">
-              {paletteName ? (
+              {isGeneratingName ? (
+                <div className="palette-name-loading">Naming your palette...</div>
+              ) : (
                 <div className="palette-name text-xl font-semibold my-4">
                   "{paletteName}"
                 </div>
-              ) : (
-                <button
-                  onClick={generateAIName}
-                  disabled={isGeneratingName}
-                  className={`name-generator-btn ${themeMode === 'dark' ? 'dark-mode-button' : ''} ${isGeneratingName ? 'opacity-70' : ''}`}
-                >
-                  {isGeneratingName ? 'Naming palette...' : 'Name this palette with AI'}
-                </button>
               )}
             </div>
           )}
@@ -648,7 +648,7 @@ function App() {
               🎨
             </button>
             
-            {/* Rename Button */}
+            {/* Rename Button - Keep this for manual renaming */}
             <button 
               onClick={() => {
                 setPaletteName('');

@@ -445,6 +445,27 @@ body, .container, .control-btn, button, .color-code,
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+.palette-name-loading {
+  font-family: 'Space Mono', monospace;
+  font-style: italic;
+  padding: 0.5rem 1.5rem;
+  opacity: 0.8;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* We can remove the button styles since we're auto-generating names now */
 .name-generator-btn {
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: 20px;
