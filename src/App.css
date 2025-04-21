@@ -425,3 +425,53 @@ body, .container, .control-btn, button, .color-code,
 .style-harmony-label, .toast-notification, .saved-palette-item {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+/* Palette name styling */
+.palette-name-container {
+  margin: 1rem 0 2rem;
+  min-height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.palette-name {
+  font-family: 'Space Mono', monospace;
+  font-style: italic;
+  animation: fadeIn 0.5s ease-in-out;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.name-generator-btn {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  padding: 0.5rem 1.2rem;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  font-family: 'Space Mono', monospace;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+}
+
+.name-generator-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.name-generator-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.name-generator-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.dark-mode .palette-name {
+  background-color: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}

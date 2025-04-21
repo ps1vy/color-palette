@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import { generatePaletteName } from '../services/api/paletteNameService'
 
 // Types
 type PaletteStyle = 'retro' | 'modern' | 'pastel' | 'vibrant'
@@ -9,6 +10,7 @@ type ColorPalette = {
   colors: string[]
   style: PaletteStyle
   harmony: ColorHarmony
+  name?: string
 }
 type Toast = {
   id: string
@@ -255,6 +257,8 @@ function App() {
   const [showHearts, setShowHearts] = useState(false)
   const [isRemovingFavorite, setIsRemovingFavorite] = useState(false)
   const [themeMode, setThemeMode] = useState<ThemeMode>('light')
+  const [paletteName, setPaletteName] = useState<string>('')
+  const [isGeneratingName, setIsGeneratingName] = useState(false)
 
   // Generate initial palette on mount
   useEffect(() => {
@@ -416,6 +420,38 @@ function App() {
     setCurrentPalette(applyStyleFilter(newColors, currentStyle))
   }
 
+  // Clear palette name when generating a new palette
+  useEffect(() => {
+    setPaletteName('');
+  }, [currentPalette]);
+
+  // Generate a name for the current palette using AI
+  const generateAIName = async () => {
+    if (currentPalette.length === 0) return;
+    
+    try {
+      setIsGeneratingName(true);
+      const name = await generatePaletteName(currentPalette);
+      setPaletteName(name);
+      
+      setToast({
+        id: Date.now().toString(),
+        message: `Named your palette: "${name}"`,
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Error generating palette name:', error);
+      setToast({
+        id: Date.now().toString(),
+        message: 'Failed to generate palette name',
+        type: 'error'
+      });
+    } finally {
+      setIsGeneratingName(false);
+    }
+  };
+
+  // Modified savePalette function to include the AI-generated name
   const savePalette = () => {
     const isPaletteInFavorites = isCurrentPaletteInFavorites();
     
@@ -423,7 +459,6 @@ function App() {
       // Remove from favorites
       setIsRemovingFavorite(true);
       
-      // Find and remove the palette
       setFavorites(favorites.filter(fav => {
         const favColorsStr = JSON.stringify([...fav.colors].sort());
         const currentPaletteStr = JSON.stringify([...currentPalette].sort());
@@ -432,29 +467,31 @@ function App() {
                 fav.harmony === currentHarmony);
       }));
       
-      // Animation for removal
       setSaveButtonSelected(true);
       
-      // Reset states
       setTimeout(() => {
         setSaveButtonSelected(false);
         setIsRemovingFavorite(false);
       }, 800);
     } else {
-      // Add to favorites
+      // Add to favorites with name if available
       const newPalette: ColorPalette = {
         id: Date.now().toString(),
         colors: [...currentPalette],
         style: currentStyle,
         harmony: currentHarmony
+      };
+      
+      // Add the AI-generated name if available
+      if (paletteName) {
+        newPalette.name = paletteName;
       }
+      
       setFavorites([...favorites, newPalette]);
       
-      // Animation effects
       setSaveButtonSelected(true);
       setShowHearts(true);
       
-      // Reset button state after animation
       setTimeout(() => {
         setSaveButtonSelected(false);
       }, 800);
@@ -552,6 +589,25 @@ function App() {
             ))}
           </div>
           
+          {/* AI-Generated Palette Name */}
+          {currentPalette.length > 0 && (
+            <div className="palette-name-container mb-8 text-center">
+              {paletteName ? (
+                <div className="palette-name text-xl font-semibold my-4">
+                  "{paletteName}"
+                </div>
+              ) : (
+                <button
+                  onClick={generateAIName}
+                  disabled={isGeneratingName}
+                  className={`name-generator-btn ${themeMode === 'dark' ? 'dark-mode-button' : ''} ${isGeneratingName ? 'opacity-70' : ''}`}
+                >
+                  {isGeneratingName ? 'Naming palette...' : 'Name this palette with AI'}
+                </button>
+              )}
+            </div>
+          )}
+          
           {/* Style & Harmony Indicators */}
           <div className="flex justify-center space-x-8 mb-12 text-center" style={{ paddingBottom: '20px' }}>
             <p className={`style-harmony-label ${themeMode === 'dark' ? 'text-gray-300' : 'text-neutral-700'}`}>
@@ -590,6 +646,19 @@ function App() {
               aria-label="Change Harmony"
             >
               🎨
+            </button>
+            
+            {/* Rename Button */}
+            <button 
+              onClick={() => {
+                setPaletteName('');
+                setTimeout(() => generateAIName(), 100);
+              }}
+              className={`control-btn ${themeMode === 'dark' ? 'dark-mode-button' : ''}`}
+              aria-label="Rename Palette"
+              disabled={isGeneratingName}
+            >
+              ✏️
             </button>
             
             {/* Save Button */}
@@ -639,6 +708,9 @@ function App() {
                         ))}
                       </div>
                       <div className="flex flex-col items-start mx-4">
+                        {palette.name && (
+                          <span className="text-sm font-semibold mb-1">"{palette.name}"</span>
+                        )}
                         <span className="text-sm">Style: {palette.style}</span>
                         <span className="text-sm">Harmony: {palette.harmony || 'random'}</span>
                       </div>
